@@ -10,23 +10,37 @@ function App() {
   const API_BASE_URL = "https://api.themoviedb.org/3";
 
   // Fungsi untuk mengambil data (bisa Popular atau Search)
-  const fetchMovies = async (query = '') => {
+const fetchMovies = async (query = '') => {
+  try {
     setLoading(true);
-    // Jika ada query search, pakai endpoint search. Jika tidak, pakai popular.
     const endpoint = query 
-      ? `${API_BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`
+      ? `${API_BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
       : `${API_BASE_URL}/movie/popular?api_key=${API_KEY}`;
 
-    try {
-      const response = await fetch(endpoint);
-      const data = await response.json();
-      setMovies(data.results);
-    } catch (error) {
-      console.error("Error fetching movies:", error);
-    } finally {
-      setLoading(false);
+    const response = await fetch(endpoint);
+    
+    if (!response.ok) {
+      throw new Error("Gagal mengambil data dari server");
     }
-  };
+
+    const data = await response.json();
+    
+    // Pastikan data.results ada sebelum di-set ke state
+    if (data.results) {
+      setMovies(data.results);
+    } else {
+      setMovies([]);
+    }
+  } catch (error) {
+    console.error("Terjadi Eror:", error);
+    alert("Koneksi bermasalah atau API Key salah!");
+  } finally {
+    // Beri jeda sedikit agar transisi loading lebih halus
+    setTimeout(() => {
+      setLoading(false);
+    }, 300);
+  }
+};
 
   // Jalankan saat pertama kali website dibuka
   useEffect(() => {
@@ -50,13 +64,15 @@ function App() {
         
         {/* Form Search */}
         <form onSubmit={handleSearch} className="flex gap-2 w-full md:w-auto">
-          <input 
-            type="text" 
-            placeholder="Cari film Marvel..." 
-            className="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:border-cyan-400 w-full"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} // Update state saat mengetik
-          />
+        <input 
+          id="search-input"
+          name="search"
+          type="text" 
+          placeholder="Cari film Marvel..." 
+          className="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 focus:outline-none focus:border-cyan-400 w-full"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
           <button 
             type="submit"
             className="bg-cyan-600 hover:bg-cyan-700 px-6 py-2 rounded-lg font-bold transition-colors"
