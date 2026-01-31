@@ -1,36 +1,38 @@
-import React from 'react';
-
-const MovieCard = ({ movie, isFavorite, onToggleFavorite }) => {
+const MovieCard = ({ movie, theme, isFavorite, onToggleFavorite, onClick }) => {
   return (
-    <div className="group cursor-pointer">
-      <div className="relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 group-hover:scale-105">
+    <div 
+      onClick={onClick} 
+      className="group relative cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
+    >
+      {/* Container Gambar ala iPhone (Rounded Parah) */}
+      <div className="relative aspect-[2/3] overflow-hidden rounded-[2.5rem] bg-white/5 border border-white/10 shadow-2xl transition-all group-hover:border-cyan-500/50">
         <img 
-          src={movie.poster_path 
-            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
-            : "https://via.placeholder.com/500x750?text=No+Image"} 
+          src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "https://via.placeholder.com/500x750"} 
           alt={movie.title}
-          className="w-full h-[350px] object-cover"
+          className="w-full h-full object-cover"
         />
         
-        {/* Tombol Favorit */}
+        {/* Tombol Favorit Melayang */}
         <button 
           onClick={(e) => {
-            e.stopPropagation(); // Agar klik tombol tidak memicu klik kartu
+            e.stopPropagation(); // Biar pas klik Love, gak malah buka detail
             onToggleFavorite(movie);
           }}
-          className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-md rounded-full hover:bg-black/80 transition-colors"
+          className="absolute top-4 right-4 p-3 backdrop-blur-2xl bg-black/30 rounded-full border border-white/20 hover:bg-white/40 transition-all z-10"
         >
-          <span className={isFavorite ? "text-red-500" : "text-white"}>
-            {isFavorite ? "❤️" : "🤍"}
-          </span>
+          <span className="text-lg leading-none">{isFavorite ? "❤️" : "🤍"}</span>
         </button>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-           <p className="text-xs italic text-gray-300 line-clamp-3">{movie.overview}</p>
+        {/* Overlay saat Hover */}
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center p-6">
+           <p className="text-[10px] text-gray-200 line-clamp-5 text-center italic">{movie.overview}</p>
         </div>
       </div>
-      <h3 className="mt-3 font-semibold text-sm truncate text-white">{movie.title}</h3>
-      <p className="text-cyan-400 text-xs mt-1">⭐ {movie.vote_average ? movie.vote_average.toFixed(1) : '-'}</p>
+
+      {/* Teks Judul */}
+      <h3 className={`mt-3 px-2 font-bold text-xs truncate text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-800'}`}>
+        {movie.title}
+      </h3>
     </div>
   );
 };

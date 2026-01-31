@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-950;
+    /* Efek gradasi yang bergerak pelan */
+    background: radial-gradient(circle at top right, #1e293b, #020617);
+    min-height: 100vh;
+  }
+}
+
+/* Animasi untuk kartu film */
+.movie-card-shadow {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.movie-card-shadow:hover {
+  box-shadow: 0 0 25px rgba(34, 211, 238, 0.4);
+}
